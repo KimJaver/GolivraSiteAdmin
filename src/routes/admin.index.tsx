@@ -1,0 +1,133 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingBag, Store, Users, PackageCheck } from "lucide-react";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { KpiCard } from "@/components/admin/KpiCard";
+import { ChartPlaceholder } from "@/components/admin/ChartPlaceholder";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  fetchAdminStats,
+  fetchPendingEnterprises,
+  formatDateFr,
+  formatStatutLabel,
+  formatTypeLabel,
+} from "@/lib/admin-api";
+
+export const Route = createFileRoute("/admin/")({
+  component: DashboardPage,
+});
+
+function DashboardPage() {
+  const statsQuery = useQuery({
+    queryKey: ["admin", "stats"],
+    queryFn: fetchAdminStats,
+  });
+
+  const pendingQuery = useQuery({
+    queryKey: ["admin", "enterprises", "pending"],
+    queryFn: fetchPendingEnterprises,
+  });
+
+  const stats = statsQuery.data;
+  const pending = pendingQuery.data ?? [];
+
+  return (
+    <div>
+      <PageHeader title="Dashboard" description="Vue d'ensemble de la plateforme GoLivra" />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCard
+          label="Commerces en attente"
+          icon={Store}
+          value={stats?.commerces_en_attente}
+          hint={statsQuery.isLoading ? "Chargement…" : undefined}
+        />
+        <KpiCard
+          label="Commerces actifs"
+          icon={Store}
+          value={stats?.commerces_actifs}
+          hint={statsQuery.isLoading ? "Chargement…" : undefined}
+        />
+        <KpiCard
+          label="Comptes marchands"
+          icon={Users}
+          value={stats?.comptes_marchands_en_attente}
+          hint="En attente de validation"
+        />
+        <KpiCard
+          label="Commandes"
+          icon={ShoppingBag}
+          value={stats?.commandes_total}
+          hint={statsQuery.isLoading ? "Chargement…" : "Total en base"}
+        />
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <ChartPlaceholder title="Évolution des commandes" description="Bientôt disponible" />
+        <ChartPlaceholder title="Commissions" description="Bientôt disponible" />
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-semibold">Commerces à valider</CardTitle>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/marchands">Voir tout</Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {pendingQuery.isLoading ? (
+              <p className="text-sm text-muted-foreground">Chargement…</p>
+            ) : pending.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucun commerce en attente.</p>
+            ) : (
+              pending.slice(0, 5).map((e) => (
+                <div
+                  key={e.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{e.nom}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatTypeLabel(e.type)} · {formatDateFr(e.created_at)}
+                    </p>
+                  </div>
+                  <Button size="sm" variant="secondary" asChild>
+                    <Link to="/admin/marchands/$id" params={{ id: e.id }}>
+                      Examiner
+                    </Link>
+                  </Button>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <PackageCheck className="h-4 w-4" /> Modération
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              Les restaurants et boutiques créés depuis l’app mobile arrivent avec le statut{" "}
+              <Badge variant="secondary">En attente</Badge>.
+            </p>
+            <p>Ils ne sont visibles côté clients qu’après validation admin (statut {formatStatutLabel("active")}).</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button asChild>
+                <Link to="/admin/comptes">Comptes en attente</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/admin/marchands">Gérer les marchands</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

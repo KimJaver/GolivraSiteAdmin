@@ -1,0 +1,18 @@
+# Déploiement Render — site admin statique
+# Repo : https://github.com/KimJaver/GolivraSiteAdmin
+# Après déploiement, ajoutez l’URL du site dans CORS_ORIGINS du backend (golivraback).
+
+services:
+  - type: web
+    name: golivra-admin
+    runtime: static
+    branch: main
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist/client
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_PUBLIC_API_BASE_URL
+        value: https://golivraback.onrender.com
