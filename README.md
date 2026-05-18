@@ -16,7 +16,7 @@ Ouvrir l’URL affichée (souvent `http://localhost:8080`). L’API pointe par d
 
 1. Pousser ce dépôt sur [GolivraSiteAdmin](https://github.com/KimJaver/GolivraSiteAdmin).
 2. Render → **New** → **Static Site** → connecter le repo (ou importer `render.yaml`).
-3. Build : `npm ci && npm run build` — dossier publié : `dist/client`.
+3. Build : `npm ci && npm run build` — dossier publié : `dist` (contient `index.html`).
 4. Variable d’environnement (build) : `VITE_PUBLIC_API_BASE_URL=https://golivraback.onrender.com`.
 5. Sur le service API **golivraback**, ajouter l’URL du site admin dans `CORS_ORIGINS` (ex. `https://golivra-admin.onrender.com`).
 
