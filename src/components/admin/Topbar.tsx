@@ -1,10 +1,14 @@
-import { Bell, LogOut, Search } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { Bell, LogOut, Menu, Search } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { fetchAdminMe, logoutAdmin } from "@/lib/auth-api";
+import { adminNavItems } from "@/lib/admin-nav";
+import { cn } from "@/lib/utils";
+import logo from "@/assets/logo.png";
 
 function initials(nom?: string | null, email?: string | null): string {
   if (nom?.trim()) {
@@ -18,6 +22,7 @@ function initials(nom?: string | null, email?: string | null): string {
 
 export function Topbar() {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const meQuery = useQuery({
     queryKey: ["admin", "me"],
     queryFn: () => fetchAdminMe(),
@@ -32,12 +37,54 @@ export function Topbar() {
   const me = meQuery.data;
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border bg-background/80 px-6 backdrop-blur">
-      <div className="relative w-full max-w-md">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur sm:px-6">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="md:hidden" aria-label="Menu">
+            <Menu className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-72 p-0">
+          <SheetHeader className="border-b border-border px-5 py-4 text-left">
+            <SheetTitle className="flex items-center gap-2">
+              <img src={logo} alt="" className="h-8 w-8" />
+              GoLivra Admin
+            </SheetTitle>
+          </SheetHeader>
+          <nav className="space-y-1 p-3">
+            {adminNavItems.map((item) => {
+              const active = item.exact
+                ? pathname === item.to
+                : pathname === item.to || pathname.startsWith(item.to + "/");
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                    active ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              );
+            })}
+            <Link
+              to="/admin/transporteurs/nouveau"
+              className="mt-2 flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            >
+              + Créer entreprise logistique
+            </Link>
+          </nav>
+        </SheetContent>
+      </Sheet>
+
+      <div className="relative hidden w-full max-w-md sm:block">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input placeholder="Rechercher…" className="pl-9" />
       </div>
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
         <Button variant="ghost" size="icon" aria-label="Notifications">
           <Bell className="h-4 w-4" />
         </Button>

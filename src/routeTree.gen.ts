@@ -21,6 +21,7 @@ import { Route as AdminTransporteursIndexRouteImport } from './routes/admin.tran
 import { Route as AdminMarchandsIndexRouteImport } from './routes/admin.marchands.index'
 import { Route as AdminComptesIndexRouteImport } from './routes/admin.comptes.index'
 import { Route as AdminCommandesIndexRouteImport } from './routes/admin.commandes.index'
+import { Route as AdminTransporteursNouveauRouteImport } from './routes/admin.transporteurs.nouveau'
 import { Route as AdminTransporteursIdRouteImport } from './routes/admin.transporteurs.$id'
 import { Route as AdminMarchandsIdRouteImport } from './routes/admin.marchands.$id'
 import { Route as AdminCommandesIdRouteImport } from './routes/admin.commandes.$id'
@@ -85,6 +86,12 @@ const AdminCommandesIndexRoute = AdminCommandesIndexRouteImport.update({
   path: '/commandes/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTransporteursNouveauRoute =
+  AdminTransporteursNouveauRouteImport.update({
+    id: '/transporteurs/nouveau',
+    path: '/transporteurs/nouveau',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminTransporteursIdRoute = AdminTransporteursIdRouteImport.update({
   id: '/transporteurs/$id',
   path: '/transporteurs/$id',
@@ -113,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/admin/commandes/$id': typeof AdminCommandesIdRoute
   '/admin/marchands/$id': typeof AdminMarchandsIdRoute
   '/admin/transporteurs/$id': typeof AdminTransporteursIdRoute
+  '/admin/transporteurs/nouveau': typeof AdminTransporteursNouveauRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/comptes/': typeof AdminComptesIndexRoute
   '/admin/marchands/': typeof AdminMarchandsIndexRoute
@@ -129,6 +137,7 @@ export interface FileRoutesByTo {
   '/admin/commandes/$id': typeof AdminCommandesIdRoute
   '/admin/marchands/$id': typeof AdminMarchandsIdRoute
   '/admin/transporteurs/$id': typeof AdminTransporteursIdRoute
+  '/admin/transporteurs/nouveau': typeof AdminTransporteursNouveauRoute
   '/admin/commandes': typeof AdminCommandesIndexRoute
   '/admin/comptes': typeof AdminComptesIndexRoute
   '/admin/marchands': typeof AdminMarchandsIndexRoute
@@ -147,6 +156,7 @@ export interface FileRoutesById {
   '/admin/commandes/$id': typeof AdminCommandesIdRoute
   '/admin/marchands/$id': typeof AdminMarchandsIdRoute
   '/admin/transporteurs/$id': typeof AdminTransporteursIdRoute
+  '/admin/transporteurs/nouveau': typeof AdminTransporteursNouveauRoute
   '/admin/commandes/': typeof AdminCommandesIndexRoute
   '/admin/comptes/': typeof AdminComptesIndexRoute
   '/admin/marchands/': typeof AdminMarchandsIndexRoute
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$id'
     | '/admin/marchands/$id'
     | '/admin/transporteurs/$id'
+    | '/admin/transporteurs/nouveau'
     | '/admin/commandes/'
     | '/admin/comptes/'
     | '/admin/marchands/'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$id'
     | '/admin/marchands/$id'
     | '/admin/transporteurs/$id'
+    | '/admin/transporteurs/nouveau'
     | '/admin/commandes'
     | '/admin/comptes'
     | '/admin/marchands'
@@ -199,6 +211,7 @@ export interface FileRouteTypes {
     | '/admin/commandes/$id'
     | '/admin/marchands/$id'
     | '/admin/transporteurs/$id'
+    | '/admin/transporteurs/nouveau'
     | '/admin/commandes/'
     | '/admin/comptes/'
     | '/admin/marchands/'
@@ -297,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCommandesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/transporteurs/nouveau': {
+      id: '/admin/transporteurs/nouveau'
+      path: '/transporteurs/nouveau'
+      fullPath: '/admin/transporteurs/nouveau'
+      preLoaderRoute: typeof AdminTransporteursNouveauRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/transporteurs/$id': {
       id: '/admin/transporteurs/$id'
       path: '/transporteurs/$id'
@@ -330,6 +350,7 @@ interface AdminRouteChildren {
   AdminCommandesIdRoute: typeof AdminCommandesIdRoute
   AdminMarchandsIdRoute: typeof AdminMarchandsIdRoute
   AdminTransporteursIdRoute: typeof AdminTransporteursIdRoute
+  AdminTransporteursNouveauRoute: typeof AdminTransporteursNouveauRoute
   AdminCommandesIndexRoute: typeof AdminCommandesIndexRoute
   AdminComptesIndexRoute: typeof AdminComptesIndexRoute
   AdminMarchandsIndexRoute: typeof AdminMarchandsIndexRoute
@@ -345,6 +366,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCommandesIdRoute: AdminCommandesIdRoute,
   AdminMarchandsIdRoute: AdminMarchandsIdRoute,
   AdminTransporteursIdRoute: AdminTransporteursIdRoute,
+  AdminTransporteursNouveauRoute: AdminTransporteursNouveauRoute,
   AdminCommandesIndexRoute: AdminCommandesIndexRoute,
   AdminComptesIndexRoute: AdminComptesIndexRoute,
   AdminMarchandsIndexRoute: AdminMarchandsIndexRoute,

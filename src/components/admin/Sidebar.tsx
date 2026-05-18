@@ -1,35 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  Store,
-  Truck,
-  ShoppingBag,
-  PackageCheck,
-  Percent,
-  BarChart3,
-  Settings,
-  Users,
-} from "lucide-react";
 import logo from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
+import { adminNavItems } from "@/lib/admin-nav";
 
-const items = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/marchands", label: "Restaurants & Boutiques", icon: Store, exact: false },
-  { to: "/admin/comptes", label: "Comptes marchands", icon: Users, exact: false },
-  { to: "/admin/transporteurs", label: "Entreprises de livraison", icon: Truck, exact: false },
-  { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag, exact: false },
-  { to: "/admin/livraisons", label: "Livraisons", icon: PackageCheck, exact: false },
-  { to: "/admin/commissions", label: "Commissions", icon: Percent, exact: false },
-  { to: "/admin/analytics", label: "Analytics", icon: BarChart3, exact: false },
-  { to: "/admin/parametres", label: "Paramètres", icon: Settings, exact: false },
-] as const;
-
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col">
+    <aside className={cn("flex w-64 shrink-0 flex-col border-r border-border bg-card", className)}>
       <div className="flex h-16 items-center gap-2 border-b border-border px-5">
         <img src={logo} alt="GoLivra" className="h-9 w-9 object-contain" />
         <span className="text-lg font-bold tracking-tight text-foreground">
@@ -37,7 +15,7 @@ export function Sidebar() {
         </span>
       </div>
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {items.map((item) => {
+        {adminNavItems.map((item) => {
           const active = item.exact
             ? pathname === item.to
             : pathname === item.to || pathname.startsWith(item.to + "/");
@@ -52,11 +30,21 @@ export function Sidebar() {
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           );
         })}
+        <Link
+          to="/admin/transporteurs/nouveau"
+          className={cn(
+            "mt-2 flex items-center gap-3 rounded-md border border-dashed border-primary/40 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/5",
+            pathname === "/admin/transporteurs/nouveau" && "bg-primary/10",
+          )}
+        >
+          <span className="text-lg leading-none">+</span>
+          Créer entreprise logistique
+        </Link>
       </nav>
       <div className="border-t border-border p-4">
         <p className="text-xs text-muted-foreground">© GoLivra Admin</p>

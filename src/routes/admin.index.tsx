@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ShoppingBag, Store, Users, PackageCheck } from "lucide-react";
+import { ShoppingBag, Store, Users, PackageCheck, Truck, Plus } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { ChartPlaceholder } from "@/components/admin/ChartPlaceholder";
@@ -68,6 +68,29 @@ function DashboardPage() {
         <ChartPlaceholder title="Évolution des commandes" description="Bientôt disponible" />
         <ChartPlaceholder title="Commissions" description="Bientôt disponible" />
       </div>
+
+      <Card className="mt-6 border-primary/20 bg-primary/5">
+        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+            <Truck className="h-4 w-4 text-primary" />
+            Entreprises de livraison
+          </CardTitle>
+          <Button asChild>
+            <Link to="/admin/transporteurs/nouveau">
+              <Plus className="h-4 w-4" /> Créer une entreprise logistique
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Partenaires qui gèrent leurs propres livreurs. Créez l&apos;entreprise, puis ajoutez les livreurs depuis la
+            fiche détail.
+          </p>
+          <Button variant="link" className="mt-2 h-auto p-0" asChild>
+            <Link to="/admin/transporteurs">Voir toutes les entreprises →</Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
