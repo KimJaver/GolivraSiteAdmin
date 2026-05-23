@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Ban, CheckCircle2, Loader2 } from "lucide-react";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +11,12 @@ import {
   formatDateFr,
   formatDateTimeFr,
   formatStatutLabel,
+  updateLogisticsCommissionAdmin,
   updateLogisticsStatusAdmin,
   type AdminDelivery,
 } from "@/lib/admin-api";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { EventTimeline } from "@/components/admin/EventTimeline";
 import { LogisticsStatsPanel } from "@/components/admin/LogisticsStatsPanel";
 
@@ -25,6 +28,8 @@ function TransporteurDetailPage() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState<string | null>(null);
+  const [commissionPct, setCommissionPct] = useState("");
+  const [savingCommission, setSavingCommission] = useState(false);
 
   const detailQuery = useQuery({
     queryKey: ["admin", "logistics", id],
@@ -33,6 +38,24 @@ function TransporteurDetailPage() {
 
   const company = detailQuery.data;
   const statut = company?.statut_moderation || company?.statut;
+
+  useEffect(() => {
+    if (company?.commission_pct != null) {
+      setCommissionPct(String(company.commission_pct));
+    }
+  }, [company?.commission_pct]);
+
+  const saveCommission = async () => {
+    const pct = Number(commissionPct);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 100) return;
+    setSavingCommission(true);
+    try {
+      await updateLogisticsCommissionAdmin(id, pct);
+      await detailQuery.refetch();
+    } finally {
+      setSavingCommission(false);
+    }
+  };
 
   const run = async (action: "activate" | "reject" | "suspend") => {
     setLoading(action);
@@ -142,6 +165,39 @@ function TransporteurDetailPage() {
               <div>
                 <dt className="text-xs text-muted-foreground">Inscription</dt>
                 <dd>{formatDateFr(company.created_at)}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs text-muted-foreground mb-2">
+                  Commission GoLivra sur livraison (%)
+                </dt>
+                <dd className="flex flex-wrap items-end gap-2">
+                  <div className="w-28">
+                    <Label htmlFor="commission_pct" className="sr-only">
+                      Pourcentage
+                    </Label>
+                    <Input
+                      id="commission_pct"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={0.5}
+                      value={commissionPct}
+                      onChange={(e) => setCommissionPct(e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={savingCommission}
+                    onClick={() => void saveCommission()}
+                  >
+                    {savingCommission ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enregistrer"}
+                  </Button>
+                  <span className="text-xs text-muted-foreground w-full">
+                    Contrat par entreprise — appliqué à chaque livraison de cette société.
+                  </span>
+                </dd>
               </div>
             </dl>
           </CardContent>

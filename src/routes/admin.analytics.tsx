@@ -72,7 +72,7 @@ function AnalyticsPage() {
                 ? `${Number(commissions.total_commission).toLocaleString("fr-FR")} FCFA`
                 : "—"}
             </p>
-            <p>Sous-commandes suivies : {commissions?.factures_emises ?? "—"}</p>
+            <p>Commandes par commerce suivies : {commissions?.factures_emises ?? "—"}</p>
             <Button variant="outline" className="mt-2" asChild>
               <Link to="/admin/commissions">Voir le détail</Link>
             </Button>

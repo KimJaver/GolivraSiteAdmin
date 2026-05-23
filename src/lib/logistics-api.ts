@@ -4,7 +4,7 @@ import type { AdminCourier, AdminLogistics, TimelineStep } from "@/lib/admin-api
 
 function token() {
   const t = getAdminToken();
-  if (!t) throw new Error("Session expirée. Reconnectez-vous.");
+  if (!t) throw new Error("Reconnectez-vous pour continuer.");
   return t;
 }
 

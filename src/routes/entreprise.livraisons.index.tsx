@@ -134,7 +134,7 @@ function EntrepriseLivraisonsPage() {
           columns={["Commande", "Adresse", "Livreur", "Statut", "Retard", "Cmd. créée", "Livraison créée", "Attribuée", "Terminée", "Actions"]}
           rows={rows}
           emptyTitle="Aucune livraison"
-          emptyDescription="Les missions apparaissent ici lorsqu'un commerce marque une sous-commande comme prête."
+          emptyDescription="Les missions apparaissent ici quand un commerce marque une commande comme prête."
         />
       )}
     </div>

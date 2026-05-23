@@ -1,9 +1,10 @@
 import { apiFetch } from "@/lib/api";
 import { getAdminToken } from "@/lib/auth-session";
+import { formatEnterpriseTypeLabel, formatStatutLabel as formatStatutLabelUx } from "@/lib/ux-copy";
 
 function token() {
   const t = getAdminToken();
-  if (!t) throw new Error("Session admin expirée. Reconnectez-vous.");
+  if (!t) throw new Error("Reconnectez-vous pour continuer.");
   return t;
 }
 
@@ -166,23 +167,8 @@ export async function approveUserAdmin(userId: string): Promise<AdminPendingUser
   });
 }
 
-export function formatStatutLabel(statut?: string | null): string {
-  const map: Record<string, string> = {
-    en_attente: "En attente",
-    en_examen: "En examen",
-    active: "Actif",
-    suspendue: "Suspendu",
-    rejetee: "Rejeté",
-  };
-  if (!statut) return "—";
-  return map[statut] || statut;
-}
-
-export function formatTypeLabel(type?: string | null): string {
-  if (type === "restaurant") return "Restaurant";
-  if (type === "boutique") return "Boutique";
-  return type || "—";
-}
+export const formatStatutLabel = formatStatutLabelUx;
+export const formatTypeLabel = formatEnterpriseTypeLabel;
 
 export function formatDateFr(iso?: string | null): string {
   if (!iso) return "—";
@@ -307,6 +293,8 @@ export type AdminLogistics = {
   email?: string | null;
   statut?: string;
   statut_moderation?: string;
+  /** % GoLivra prélevé sur les frais de livraison de cette entreprise */
+  commission_pct?: number;
   nb_livreurs?: number;
   created_at?: string;
   gestionnaire?: AdminOwner | null;
@@ -467,6 +455,17 @@ export async function updateLogisticsStatusAdmin(
     method: "PATCH",
     token: token(),
     jsonBody: raison ? { action, raison } : { action },
+  });
+}
+
+export async function updateLogisticsCommissionAdmin(
+  id: string,
+  commission_pct: number,
+): Promise<AdminLogistics> {
+  return apiFetch<AdminLogistics>(`/api/admin/logistics/${id}/commission`, {
+    method: "PATCH",
+    token: token(),
+    jsonBody: { commission_pct },
   });
 }
 

@@ -57,7 +57,7 @@ function CommissionsPage() {
               : undefined
           }
         />
-        <KpiCard label="Sous-commandes" icon={Receipt} value={data?.factures_emises} />
+        <KpiCard label="Commandes par commerce" icon={Receipt} value={data?.factures_emises} />
       </div>
 
       <div className="mt-6">
