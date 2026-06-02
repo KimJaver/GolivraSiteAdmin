@@ -4,6 +4,7 @@ import { ShoppingBag, Store, Users, PackageCheck, Truck, Plus, Package, AlertTri
 import { PageHeader } from "@/components/admin/PageHeader";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
+import { ObservabilityDashboardPanel } from "@/components/admin/ObservabilityDashboardPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -112,6 +113,10 @@ function DashboardPage() {
 
       <div className="mt-6">
         <DashboardCharts />
+      </div>
+
+      <div className="mt-6">
+        <ObservabilityDashboardPanel defaultWindow={60} />
       </div>
 
       <Card className="mt-6 border-primary/20 bg-primary/5">
