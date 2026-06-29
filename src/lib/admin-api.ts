@@ -679,13 +679,35 @@ export type AdminZone = {
 export type AdminArrondissement = {
   id: string;
   name: string;
+  ville_id: string | null;
   zone_id: string | null;
   sort_order: number;
 };
 
+export type AdminArrondissementShort = {
+  id: string;
+  name: string;
+  zone_id: string | null;
+  sort_order: number;
+};
+
+export type AdminVilleWithArrondissements = {
+  id: string;
+  nom: string;
+  arrondissements: AdminArrondissementShort[];
+};
+
+export type AdminPaysWithVilles = {
+  id: string;
+  nom: string;
+  code_iso2: string;
+  villes: AdminVilleWithArrondissements[];
+};
+
 export type AdminZonesBoard = {
   zones: AdminZone[];
-  arrondissements: AdminArrondissement[];
+  pays: AdminPaysWithVilles[];
+  arrondissements_unlinked: AdminArrondissementShort[];
 };
 
 export async function fetchAdminZonesBoard(): Promise<AdminZonesBoard> {
@@ -703,5 +725,140 @@ export async function updateAdminZonesBoard(body: {
     method: "PATCH",
     token: token(),
     jsonBody: body,
+  });
+}
+
+// ── Admin : pays / villes / arrondissements ─────────────────────────────────
+
+export type AdminPays = {
+  id: string;
+  nom: string;
+  code_iso2: string;
+  code_iso3: string;
+  indicatif: string | null;
+};
+
+export type AdminVille = {
+  id: string;
+  pays_id: string;
+  nom: string;
+  sort_order: number;
+};
+
+export type AdminArrondissementFull = {
+  id: string;
+  ville_id: string;
+  name: string;
+  zone_id: string | null;
+  sort_order: number;
+};
+
+export async function fetchAdminPays(): Promise<AdminPays[]> {
+  const data = await apiFetch<AdminPays[]>("/api/admin/locations/pays", {
+    method: "GET",
+    token: token(),
+  });
+  return Array.isArray(data) ? data : [];
+}
+
+export async function createAdminPays(body: {
+  nom: string;
+  code_iso2: string;
+  code_iso3: string;
+  indicatif?: string;
+}): Promise<AdminPays> {
+  return apiFetch<AdminPays>("/api/admin/locations/pays", {
+    method: "POST",
+    token: token(),
+    jsonBody: body,
+  });
+}
+
+export async function updateAdminPays(
+  paysId: string,
+  body: Partial<{ nom: string; code_iso2: string; code_iso3: string; indicatif: string }>,
+): Promise<AdminPays> {
+  return apiFetch<AdminPays>(`/api/admin/locations/pays/${paysId}`, {
+    method: "PATCH",
+    token: token(),
+    jsonBody: body,
+  });
+}
+
+export async function deleteAdminPays(paysId: string): Promise<void> {
+  await apiFetch(`/api/admin/locations/pays/${paysId}`, {
+    method: "DELETE",
+    token: token(),
+  });
+}
+
+export async function fetchAdminVilles(paysId?: string): Promise<AdminVille[]> {
+  const qs = paysId ? `?pays_id=${encodeURIComponent(paysId)}` : "";
+  const data = await apiFetch<AdminVille[]>(`/api/admin/locations/villes${qs}`, {
+    method: "GET",
+    token: token(),
+  });
+  return Array.isArray(data) ? data : [];
+}
+
+export async function createAdminVille(body: {
+  pays_id: string;
+  nom: string;
+  sort_order?: number;
+}): Promise<AdminVille> {
+  return apiFetch<AdminVille>("/api/admin/locations/villes", {
+    method: "POST",
+    token: token(),
+    jsonBody: body,
+  });
+}
+
+export async function updateAdminVille(
+  villeId: string,
+  body: Partial<{ nom: string; sort_order: number }>,
+): Promise<AdminVille> {
+  return apiFetch<AdminVille>(`/api/admin/locations/villes/${villeId}`, {
+    method: "PATCH",
+    token: token(),
+    jsonBody: body,
+  });
+}
+
+export async function deleteAdminVille(villeId: string): Promise<void> {
+  await apiFetch(`/api/admin/locations/villes/${villeId}`, {
+    method: "DELETE",
+    token: token(),
+  });
+}
+
+export async function fetchAdminArrondissements(villeId?: string): Promise<AdminArrondissementFull[]> {
+  const qs = villeId ? `?ville_id=${encodeURIComponent(villeId)}` : "";
+  const data = await apiFetch<AdminArrondissementFull[]>(
+    `/api/admin/locations/arrondissements${qs}`,
+    {
+      method: "GET",
+      token: token(),
+    },
+  );
+  return Array.isArray(data) ? data : [];
+}
+
+export async function createAdminArrondissement(body: {
+  ville_id: string;
+  name: string;
+  sort_order?: number;
+  zone_id?: string | null;
+}): Promise<AdminArrondissementFull> {
+  return apiFetch<AdminArrondissementFull>("/api/admin/locations/arrondissements", {
+    method: "POST",
+    token: token(),
+    jsonBody: body,
+  });
+}
+
+export async function deleteAdminArrondissement(arrId: string): Promise<void> {
+  await apiFetch(`/api/admin/locations/arrondissements/${arrId}`, {
+    method: "DELETE",
+    token: token(),
   });
 }
